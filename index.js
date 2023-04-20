@@ -11,11 +11,11 @@ var bodyParser = require('body-parser');
 app.use(cors());
 const port = process.env.PORT || 5000;
 app.get("/", (req, res) => {
-  res.send("puzzle backend version1");
+  res.send("puzzle backend version2");
 });
 
 app.use(express.json({limit : '50mb',extended : true}))
-
+app.use(express.urlencoded({limit : '50mb',extended : true}))
 
 app.use("/auth", require("./routes.js"));
 

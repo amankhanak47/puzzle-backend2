@@ -21,20 +21,19 @@ router.post(
       let user = await UserCollection.findOne({ email: req.body.email });
       let sucess = false;
       if (user) {
+        console.log(user)
         return res.status(400).json({
           sucess: sucess,
           errors: "sorry a user with this email already exist",
         });
       }
-      const salt = await bcrypt.genSalt(10);
-      secpass = await bcrypt.hash(req.body.password, salt);
 
       //create new user
       user = await UserCollection.create({
         name: req.body.name,
-        password: secpass,
+        password: req.body.password,
         email: req.body.email,
-        score: 0
+        treasure: false
       });
 
       const data = {
@@ -46,9 +45,10 @@ router.post(
       sucess = true;
       res.json({ sucess, authtoken });
     } catch (error) {
+      console.log(error)
       return res.status(500).json({
           sucess: false,
-          errors: "sorry a user with this email already exist",
+          errors: error
         });
     }
   }
@@ -74,8 +74,8 @@ router.post(
           .status(400)
           .json({ sucess: sucess, errors: "eamil id is not registered" });
       }
-      const passcompare = await bcrypt.compare(password, user.password);
-      if (!passcompare) {
+      if (user.password != password) {
+        console.log(password,user.password)
         sucess = false;
         return res
           .status(400)
@@ -91,27 +91,28 @@ router.post(
 
       res.json({ sucess, authtoken });
     } catch (error) {
+      console.log(error)
       res.status(500).send({sucess:false,errors:"internal server error occured"});
     }
   }
 );
 
-//update score route
-router.post("/addscore",  body("email"),
-    body("score"),async (req, res) => {
+//update treasure route
+router.post("/updatetreasure",  body("email"),async (req, res) => {
   try {
    let user = await UserCollection.findOne({ email:req.body.email });
-    user.score = req.body.score;
+    user.treasure = true;
     await user.save()
     res.json({sucess:true, user });
   }
-  catch(error) {
+  catch (error) {
+    console.log(error)
   }
 })
 
-//get all user uscore for leaderboard
+//get all  leaderboard
 router.post(
-  "/getallscores",
+  "/getallleaders",
   async (req, res) => {
     try {
       const users=await UserCollection.find()

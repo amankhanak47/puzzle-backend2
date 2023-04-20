@@ -11,8 +11,8 @@ const UserSchema = new Schema({
   password: {
     type: String,
   },
-  score: {
-    type:Number,
+  treasure: {
+    type:Boolean,
   }
 });
 
